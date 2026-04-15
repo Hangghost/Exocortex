@@ -2,6 +2,11 @@
 
 **A three-layer context infrastructure for AI agents — your AI second brain that actually knows you.**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/Hangghost/Exocortex?style=social)](https://github.com/Hangghost/Exocortex/stargazers)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Hangghost/Exocortex/pulls)
+&nbsp;&nbsp;[🇹🇼 中文版](README.zh-TW.md)
+
 Exocortex is an open-core template for building a personalized AI agent system. It gives your AI (Claude, Cursor, etc.) persistent memory, structured context, and a self-evolving knowledge system — without locking you into any specific platform or vector database.
 
 ---
@@ -11,6 +16,18 @@ Exocortex is an open-core template for building a personalized AI agent system. 
 Every AI conversation starts from zero. The AI doesn't know your projects, your decision-making style, your past mistakes, or your ongoing work. You re-explain yourself endlessly.
 
 Exocortex solves this by giving the AI a **structured, file-based memory system** that persists across sessions, evolves over time, and stays fully under your control.
+
+---
+
+## Who Is This For
+
+**This is for you if:**
+- You use AI tools daily (Claude, Cursor, ChatGPT) and re-explain your context every session
+- You want your AI to know your projects, preferences, and decision-making style — persistently
+- You care about **owning** your AI memory, not delegating it to a black box
+- You're comfortable with Markdown files and basic git
+
+**This is not** a plug-and-play app. It's a structured system you build once and own permanently. The more context you invest, the more capable your AI becomes.
 
 ---
 
@@ -175,10 +192,10 @@ This repo is the **template** (public, upstream). Your personal instance is a **
 
 ```
 Exocortex (this repo, public) ←── template remote
-        ↑
+        │
         │  git fetch template && git merge template/main
         │  (sync architecture updates when milestones land)
-        │
+        ↓
 exocortex-personal (your fork, private)
    └── your personal data lives here, never pushed to public
 ```
@@ -191,6 +208,12 @@ When this template gets architectural updates (new capabilities, improved pipeli
 git fetch template
 git merge template/main
 ```
+
+---
+
+## Acknowledgments
+
+Heavily inspired by [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure) — a pioneering exploration of structured AI context as a personal memory system.
 
 ---
 
