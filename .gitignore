@@ -1,0 +1,48 @@
+# Environment variables — NEVER commit these
+.env
+*.env.local
+*.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# UV lock (commit uv.lock if you want reproducible installs)
+# uv.lock
+
+# Google OAuth tokens — these are personal credentials
+token.json
+*.token.json
+calendar_token.json
+gmail_token.json
+
+# API keys and secrets
+*.key
+credentials.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+/tmp/
+
+# Node (if any tools need it)
+node_modules/

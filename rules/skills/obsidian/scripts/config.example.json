@@ -1,0 +1,9 @@
+{
+  "vault_path": "/path/to/your/obsidian/vault",
+  "rest_api": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 27123,
+    "api_key": "your-api-key-from-obsidian-plugin-settings"
+  }
+}

@@ -1,0 +1,29 @@
+[project]
+name = "exocortex"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+heartbeat-v1 = [
+    "anthropic>=0.50.0",
+    "google-api-python-client>=2.100.0",
+    "google-auth-httplib2>=0.2.0",
+    "google-auth-oauthlib>=1.0.0",
+    "python-dotenv>=1.0.0",
+]
+tools = [
+    "google-genai>=1.54.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0",
+    "requests>=2.28.0",
+]
+semantic-search = [
+    "openai>=1.0.0",
+    "numpy>=1.24.0",
+    "tqdm>=4.0.0",
+]
+obsidian = [
+    "python-frontmatter>=1.0.0",
+    "requests>=2.28.0",
+]
