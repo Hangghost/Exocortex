@@ -31,6 +31,25 @@ Exocortex solves this by giving the AI a **structured, file-based memory system*
 
 ---
 
+## What You Get
+
+**An AI that remembers everything about you**
+Your active projects, ongoing work, and past decisions — without re-explaining every session. Open a conversation and your AI already knows where you left off.
+
+**An AI that thinks like you**
+Store your personal decision principles, communication style, and work philosophy. Your AI applies them automatically — giving advice that fits your mental model, not generic best practices.
+
+**A memory that grows smarter over time**
+The Observer-Reflector pipeline runs automatically: daily scans of your work logs extract patterns; weekly reflections distill them into durable insights. The longer you use the system, the more capable your AI becomes.
+
+**Full ownership of your AI's knowledge**
+Every fact your AI knows lives in plain Markdown files you control. Audit it, correct it, delete it. No black boxes, no vendor lock-in.
+
+**One memory, any AI tool**
+The same context layer works with Claude Code, Cursor, or any LLM that reads files. Switch tools without losing your AI's accumulated knowledge of you.
+
+---
+
 ## The Three-Layer Memory Architecture
 
 ```
