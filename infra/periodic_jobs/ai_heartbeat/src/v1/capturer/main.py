@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 L0 Capturer: main entry point.
-Calls calendar + email capturers, merges results, and idempotently writes
-to raw_signals/<date>/ directory.
+Reads cc_events_bridge as the sole triage source, merges results, and
+idempotently writes to raw_signals/<date>/ directory.
 """
 import json
 import logging
@@ -10,8 +10,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import calendar as cal_capturer
-from . import email as email_capturer
+from . import cc_events_bridge
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +18,13 @@ REPO_ROOT = Path(__file__).resolve().parents[5]
 RAW_SIGNALS_DIR = REPO_ROOT / "raw_signals"
 
 
-def run(target_date: str, credentials_path: str, cal_token_path: str, gmail_token_path: str) -> int:
+def run(target_date: str) -> int:
     """
-    Run all capturers for target_date.
+    Run cc_events_bridge for target_date.
     Returns number of new signals written.
+
+    Also exposes per-source stats via `last_run_stats` module attribute so
+    capture.py can include it in capture role's last_run_summary.
     """
     date_dir = RAW_SIGNALS_DIR / target_date
     date_dir.mkdir(parents=True, exist_ok=True)
@@ -31,20 +33,16 @@ def run(target_date: str, credentials_path: str, cal_token_path: str, gmail_toke
     existing_ids = _load_existing_ids(date_dir)
 
     all_signals: list[dict] = []
+    stats: dict[str, dict[str, int]] = {}
 
-    # Calendar
+    # CC hook events (bridge from inbox/captured/cc_events/) — sole triage source
     try:
-        cal_signals = cal_capturer.capture(target_date, credentials_path, cal_token_path)
-        all_signals.extend(cal_signals)
+        cc_signals = cc_events_bridge.capture(target_date)
+        all_signals.extend(cc_signals)
+        stats["cc_events"] = {"captured": len(cc_signals), "failed": 0}
     except Exception as e:
-        logger.warning("Calendar capturer failed, continuing: %s", e)
-
-    # Email
-    try:
-        email_signals = email_capturer.capture(target_date, credentials_path, gmail_token_path)
-        all_signals.extend(email_signals)
-    except Exception as e:
-        logger.warning("Email capturer failed, continuing: %s", e)
+        logger.warning("cc_events_bridge failed, continuing: %s", e)
+        stats["cc_events"] = {"captured": 0, "failed": 1}
 
     # Write new signals (skip duplicates by id)
     written = 0
@@ -60,7 +58,14 @@ def run(target_date: str, credentials_path: str, cal_token_path: str, gmail_toke
 
     logger.info("Capturer: wrote %d new signals for %s (total existing: %d)",
                 written, target_date, len(existing_ids))
+    # Stash stats on module so capture.py can pick it up for last_run_summary.
+    global last_run_stats
+    last_run_stats = stats
     return written
+
+
+# Per-source stats from the most recent run (consumed by capture.py).
+last_run_stats: dict[str, dict[str, int]] = {}
 
 
 def _load_existing_ids(date_dir: Path) -> set[str]:
