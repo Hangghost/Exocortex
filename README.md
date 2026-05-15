@@ -75,16 +75,38 @@ The same context layer works with Claude Code, Cursor, or any LLM that reads fil
 ## System Workflow
 
 ```
-Daily (19:00)   → AI Heartbeat Capture: collect signals from Calendar + Gmail
-Daily (20:00)   → AI Heartbeat Observer: scan contexts/, write to OBSERVATIONS.md
-Weekly (Sun)    → AI Heartbeat Reflector: distill observations, promote to rules/
+Daily 18:30   → State Audit: rule-based health check (no LLM)
+                 → writes findings to inbox/captured/ + raw_signals/
+                 → observer's last gatekeeper before 20:00
+Daily 19:00   → Capture: bridge Claude Code hook events into raw_signals/
+Daily 20:00   → Observer: scan contexts/ + high-signal raw_signals/,
+                 write to memory/OBSERVATIONS.md
+Weekly Sun    → Reflector: distill observations, promote durable insights to rules/
 ```
 
-You also interact with the system through structured slash commands:
-- `/ctx:content` — commit today's work logs, notes, drafts
-- `/ctx:project` — create, load, update, archive projects
-- `/ctx:arch` — propose and track architecture changes (via OpenSpec workflow)
-- `/opsx:propose|apply|archive` — OpenSpec workflow for structured changes
+The two **hero commands** frame each work day — they're what makes the
+"harness" tangible (the AI sees a curated cross-cut of your whole system,
+not a fuzzy recall from a memory store):
+
+| Command | What it does |
+|---|---|
+| `/ctx:onboard` | Morning one-page digest: integrates last night's observations, fresh inbox signals, and all active project snapshots into "today's work picture". Only possible because the harness reads across your whole knowledge graph. |
+| `/ctx:eod` | End-of-day shutdown: handles dirty trees, push, audit findings — ensures the observer at 20:00 can see today's work. |
+
+Both commands share `state_audit/core.audit()` so they observe the same
+ground truth.
+
+**Full command reference** (organized by workflow):
+
+| Workflow | Commands |
+|---|---|
+| **Project lifecycle** | `/ctx:project new|load|update|pause|resume|complete|rename` |
+| **Content commits** | `/ctx:content` (auto-routes by branch type and change shape; auto-splits mixed changes) |
+| **Architecture changes** | `/ctx:arch` → `/opsx:explore|propose|apply|archive` → `/ctx:merge` |
+| **System health** | `/ctx:onboard` (morning), `/ctx:eod` (evening) |
+| **Experiments** | `/ctx:experiment start|diff|promote|discard` |
+| **Publish to fork's template** | `/ctx:publish` (if you maintain a template-fork upstream) |
+| **Decision support** | `/think:eval` |
 
 ---
 
@@ -117,16 +139,24 @@ rules/axioms/INDEX.md ← Your personal decision principles
 ```bash
 # Copy environment template
 cp .env.example .env
-# Fill in your API keys (Anthropic, Google OAuth, etc.)
+# Fill in optional API keys:
+#   ANTHROPIC_API_KEY — required only if you run the Observer/Reflector
+#                        (the rest of the system works without an LLM)
 
 # Install dependencies
 uv sync --all-groups
 
-# Test the capture pipeline manually
+# Test state audit (no API key required)
+python -m infra.periodic_jobs.state_audit.cron
+
+# Test the capture pipeline (no API key required;
+# bridges CC hook events into raw_signals/)
 python -m infra.periodic_jobs.ai_heartbeat.src.v1.capture
 ```
 
-Set up cron jobs following `infra/periodic_jobs/CRONTAB.md`.
+Set up cron jobs following `infra/periodic_jobs/CRONTAB.md`. The minimum
+useful schedule is just **state_audit at 18:30** — Observer/Reflector are
+optional add-ons that need the Anthropic API.
 
 ### 4. Install Claude Code commands
 
@@ -163,19 +193,23 @@ Exocortex/
 │   ├── dev.md                # Active repos and dev context
 │   ├── career.md             # Career and skills
 │   ├── life.md               # Goals and learning
-│   ├── knowledge.md          # KnowledgeWiki pointer
-│   └── library.md            # Personal library pointer
+│   └── library.md            # Personal library pointer (optional)
 ├── projects/                 # Active project contexts
 │   └── INDEX.md              # Project registry
-├── library/                  # Personal document index cards
+├── library/                  # Personal document index cards (optional)
 ├── openspec/                 # Architecture change workflow
 │   ├── specs/                # Committed capability specs
 │   └── changes/              # In-progress and archived changes
 ├── infra/
+│   ├── state/                # Periodic role coordination (system_state.json + helpers)
 │   ├── periodic_jobs/
-│   │   └── ai_heartbeat/     # Observer/Reflector/Capture pipeline
+│   │   ├── state_audit/      # Rule-based health checks (no LLM)
+│   │   └── ai_heartbeat/     # Observer/Reflector/Capture pipeline (LLM-backed)
 │   └── tools/                # Utility scripts
-└── .claude/commands/         # Claude Code slash commands
+└── .claude/
+    ├── commands/             # Claude Code slash commands
+    ├── hooks/                # CC hooks for at-source capture (writes to inbox/captured/cc_events/)
+    └── settings.json         # Hook registration
 ```
 
 ---
