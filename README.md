@@ -239,31 +239,6 @@ Built-in memory is a black box. You can't audit what's stored, can't fix incorre
 
 ---
 
-## Creating Your Personal Instance
-
-This repo is the **template** (public, upstream). Your personal instance is a **fork** (private, downstream).
-
-```
-Exocortex (this repo, public) ←── template remote
-        │
-        │  git fetch template && git merge template/main
-        │  (sync architecture updates when milestones land)
-        ↓
-exocortex-personal (your fork, private)
-   └── your personal data lives here, never pushed to public
-```
-
-Your personal files (`rules/USER.md`, `rules/ENVIRONMENT.md`, `contexts/`, `memory/`, `registry/`, `projects/`, `library/`, `inbox/`) stay in your private fork and never touch the public repo.
-
-When this template gets architectural updates (new capabilities, improved pipeline, better commands), you pull them in with:
-
-```bash
-git fetch template
-git merge template/main
-```
-
----
-
 ## Acknowledgments
 
 Heavily inspired by [grapeot/context-infrastructure](https://github.com/grapeot/context-infrastructure) — a pioneering exploration of structured AI context as a personal memory system.
